@@ -96,10 +96,11 @@ public class Window extends JFrame {
 			//Attempting to set this JFrame to Fullscreen
 			try {
 				//Alter JFrame settings appropriate for Fullscreen
-				setUndecorated(true);
+				//setUndecorated(true);
 				setResizable(false);
 				setIgnoreRepaint(true);
-				vc.setFullScreenWindow(this);
+				//vc.setFullScreenWindow(this);
+				setSize(1000,1000);
 				if (vc.isDisplayChangeSupported()) {
 					try {
 						vc.setDisplayMode(dm);

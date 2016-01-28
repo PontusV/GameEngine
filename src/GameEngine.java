@@ -1,8 +1,10 @@
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class GameEngine {
 	
 	private int fpsLock;
+	boolean running;
 	private ArrayList<GameObject> gameObjects;
 	
 	private static GameEngine thisInstance;
@@ -12,8 +14,9 @@ public class GameEngine {
 		return thisInstance;
 	}
 	
-	public GameEngine() {
+	private GameEngine() {
 		//Constructor
+		gameObjects = new ArrayList<GameObject>();
 	}
 	
 	/**
@@ -24,10 +27,10 @@ public class GameEngine {
 	 * @see Window graphic display.
 	 */
 	public void initiate() {
-		Window.getInstance(); //Creates window
+		Renderer ren = Renderer.getInstance(); //Starts drawing graphic components
 		//InputManager input = InputManager.getInstance();
-		
-		boolean running = true;
+
+		running = true;
 		long currentTime = System.currentTimeMillis(), timePassed;
 		
 		//Gameloop
@@ -41,6 +44,7 @@ public class GameEngine {
 					e.printStackTrace();
 				}
 			}
+			ren.draw();
 		}
 	}
 	
@@ -51,7 +55,11 @@ public class GameEngine {
 	}
 	
 	public int addGameObject(GameObject go) {
-		gameObjects.add(go);
+		gameObjects.add(go); //Add to list
+		for (Component comp : go.getComponents()) { //Add to renderer
+			if (comp instanceof ImageComponent)
+				Renderer.getInstance().add((ImageComponent)comp);
+		}
 		return gameObjects.size()-1; //GameObject ID
 	}
 	
@@ -65,5 +73,13 @@ public class GameEngine {
 	
 	public ArrayList<GameObject> getGameObjects() {
 		return gameObjects;
+	}
+	
+	public void addKeyEvent(GameObject object, EventKey event) {
+	}
+	
+	public void terminate() {
+		running = false;
+		Window.getInstance().restoreWindow();
 	}
 }

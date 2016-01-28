@@ -5,8 +5,13 @@ public class GameObject implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private int x,y;
 	private ArrayList<Component> components;
 	//private int state; //ID for different states. Ex: jumping, injured, running, swimming, dead
+	
+	public GameObject() {
+		components = new ArrayList<Component>();
+	}
 	
 	/**
 	 * Updates all components added to this object.
@@ -22,6 +27,13 @@ public class GameObject implements Serializable {
 	
 	public void addComponent(Component comp) {
 		components.add(comp);
+		comp.setGameObject(this);
+	}
+	
+	public ArrayList<Component> getComponents() {
+		return components;
 	}
 
+	public int getX() { return x; }
+	public int getY() { return y; }
 }

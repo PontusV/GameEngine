@@ -25,7 +25,7 @@ public class GameObject implements Serializable {
 		}
 	}
 	
-	public void inputEvent(EventKey event) { System.out.println("WTF"); }
+	public void inputEvent(EventKey event) {}
 	
 	public void addComponent(Component comp) {
 		components.add(comp);

@@ -1,4 +1,3 @@
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 public class GameEngine {
@@ -35,8 +34,10 @@ public class GameEngine {
 		
 		//Gameloop
 		while (running) {
+			//Calculate timePassed
 			timePassed = System.currentTimeMillis()-currentTime;
 			currentTime = 0;
+			//Sleep thread if needed
 			if (fpsLock > 0 && timePassed < fpsLock/1000) {
 				try {
 					Thread.sleep((fpsLock/1000)-timePassed);
@@ -44,6 +45,12 @@ public class GameEngine {
 					e.printStackTrace();
 				}
 			}
+			//Update InputManager
+			InputManager.getInstance().update();
+			//Update GameObjects
+			for (GameObject go : gameObjects)
+				go.tick(timePassed);
+			//Updates screen with updated graphics
 			ren.draw();
 		}
 	}

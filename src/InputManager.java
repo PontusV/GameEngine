@@ -3,75 +3,102 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class InputManager implements KeyListener, MouseListener, MouseMotionListener {
 
-	private int pressedKey;
-	
-	//Keys bound to actions
-	private HashMap<Integer, Action> bindings;
-	
-	//The objects that need to be notified when keys are pressed
-	private ArrayList<GameObject> observers;
-	
 	//Keeps track of which keys are down
-	private boolean[] keys = new boolean[4];
-	
+	private HashMap<Integer, Boolean> keysPressed;
+	private LinkedList<Integer> keysReleased;
+	private HashMap<EventKey, GameObject> commandsPressed;
+	private HashMap<EventKey, GameObject> commandsReleased;
+
 	private static InputManager thisInstance;
 	public static InputManager getInstance() {
 		if (thisInstance == null)
 			thisInstance = new InputManager();
 		return thisInstance;
 	}
-	
-	public enum Action
-	{
-		UP, DOWN, LEFT, RIGHT
-	}
-	
+
 	private InputManager() {
 		//Constructor
+		keysPressed = new HashMap<Integer, Boolean>();
+		keysReleased = new LinkedList<Integer>();
+		commandsPressed = new HashMap<EventKey, GameObject>();
+		commandsReleased = new HashMap<EventKey, GameObject>();
 	}
-	
-	private boolean keyDown(int keyCode){
-		return keys[keyCode];
-	}
-	
-	public void addObserver(GameObject gObj){
-		observers.add(gObj);
-	}
-	
-	//The observers are notified
-	private void notifyObservers(Action action){
 
-		for(GameObject gObj : observers){
-//			gObj.notify(action);
-		}
-		
-	}
-	
-	public void initKeyBindings(){
-		bindings.put(KeyEvent.VK_UP, Action.UP);
-		bindings.put(KeyEvent.VK_DOWN, Action.DOWN);
-		bindings.put(KeyEvent.VK_LEFT, Action.LEFT);
-		bindings.put(KeyEvent.VK_RIGHT, Action.RIGHT);
-	}
-	
+	/**
+	 * Sends all input event to its corresponding GameObjects.
+	 * 
+	 * <p>Loops through all added commands and calls event if
+	 * the keys needed to be pressed are pressed.
+	 * 
+	 * @see #keysPressed
+	 * @see #commandsPressed
+	 * @see #keysReleased
+	 * @see #commandsReleased
+	 */
 	public void update(){
+		boolean callEvent;
+		Map.Entry<EventKey, GameObject> pair;
+		EventKey event;
+		Iterator<Entry<EventKey, GameObject>> it;
+		//Key Pressed
+		it = commandsPressed.entrySet().iterator();
+		while (it.hasNext()) {
+			pair = (Map.Entry<EventKey, GameObject>)it.next();
+			event = pair.getKey();
+			callEvent = true;
 
-		if(keyDown(pressedKey)){
-			if(bindings.get(pressedKey) == Action.UP ||
-					bindings.get(pressedKey) == Action.DOWN ||
-					bindings.get(pressedKey) == Action.LEFT ||
-					bindings.get(pressedKey) == Action.RIGHT){
-				notifyObservers(bindings.get(pressedKey));
+			for (Integer keyCode : event.getKeyCodes()) {
+				if (!keysPressed.containsKey(keyCode) || !keysPressed.get(keyCode)) {
+					callEvent = false;
+					break;
+				}
 			}
+			if (callEvent) //If all keys are pressed, calls event
+				pair.getValue().inputEvent(event);
 		}
-		
+		//Key Released
+		it = commandsReleased.entrySet().iterator();
+		while (it.hasNext()) {
+			pair = (Map.Entry<EventKey, GameObject>)it.next();
+			event = pair.getKey();
+			callEvent = true;
+
+			for (Integer keyCode : event.getKeyCodes()) {
+				if (!keysReleased.contains(keyCode)) {
+					callEvent = false;
+					break;
+				}
+			}
+			if (callEvent) //If all keys are pressed, calls event
+				pair.getValue().inputEvent(event);
+		}
+		//Clear list of released keys
+		keysReleased.clear();
 	}
-	
+
+	/**
+	 * Links KeyEvents with GameObjects.
+	 * 
+	 * <p>When the specified keycode combination is pressed an EventKey
+	 * containing information of the event will be sent to the specified object.
+	 * 
+	 * @see EventKey
+	 */
+	public void addCommandPressed(LinkedList<Integer> codes, GameObject go) {
+		commandsPressed.put(new EventKey(codes, true), go);
+	}
+	public void addCommandReleased(LinkedList<Integer> codes, GameObject go) {
+		commandsReleased.put(new EventKey(codes, false), go);
+	}
+
 	@Override
 	public void mouseClicked(MouseEvent arg0) {}
 
@@ -89,17 +116,14 @@ public class InputManager implements KeyListener, MouseListener, MouseMotionList
 
 	@Override
 	public void keyPressed(KeyEvent keyEvent) {
-		
-		keys[keyEvent.getKeyCode()] = true;	
-		update();
-		
+		keysPressed.put(keyEvent.getKeyCode(), true);
 	}
-	
+
 	@Override
 	public void keyReleased(KeyEvent keyEvent) {
-		
-		keys[keyEvent.getKeyCode()] = false;
-		
+		keysPressed.put(keyEvent.getKeyCode(), false);
+		if (!keysReleased.contains(keyEvent.getKeyCode()))
+			keysReleased.add(keyEvent.getKeyCode());
 	}
 
 	@Override

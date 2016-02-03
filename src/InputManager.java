@@ -65,19 +65,22 @@ public class InputManager implements KeyListener, MouseListener, MouseMotionList
 				pair.getValue().inputEvent(event);
 		}
 		//Key Released
+		boolean released;
 		it = commandsReleased.entrySet().iterator();
 		while (it.hasNext()) {
 			pair = (Map.Entry<EventKey, GameObject>)it.next();
 			event = pair.getKey();
 			callEvent = true;
+			released = false;
 
 			for (Integer keyCode : event.getKeyCodes()) {
-				if (!keysReleased.contains(keyCode)) {
+				if (!keysReleased.contains(keyCode) && (!keysPressed.containsKey(keyCode) || !keysPressed.get(keyCode))) { //If Key is isnt Released and isnt currently Pressed
 					callEvent = false;
 					break;
-				}
+				} else if (keysReleased.contains(keyCode)) //If key is released
+					released = true;
 			}
-			if (callEvent) //If all keys are pressed, calls event
+			if (released && callEvent) //If at least 1 key of the combination is released, calls event
 				pair.getValue().inputEvent(event);
 		}
 		//Clear list of released keys

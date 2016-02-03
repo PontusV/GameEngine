@@ -30,7 +30,7 @@ public class Main {
 		//Adding a command makes the Game Engine send chosen key events to specified Game Object
 		LinkedList<Integer> keyCodes = new LinkedList<Integer>();
 		keyCodes.add(KeyEvent.VK_SPACE);
-		InputManager.getInstance().addCommandPressed(keyCodes, go); //Sends SPACE to go
+		keyCodes.add(KeyEvent.VK_W);
 		InputManager.getInstance().addCommandReleased(keyCodes, go); //Sends SPACE to go
 		
 		engine.initiate();

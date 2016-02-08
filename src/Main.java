@@ -31,6 +31,8 @@ public class Main {
 		Sound sound = new Sound(testSound);
 		sound.play();
 		
+		Loader.getInstance().loadGameObject(go);
+		
 		engine.initiate();
 	}
 }

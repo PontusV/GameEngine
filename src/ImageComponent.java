@@ -26,6 +26,10 @@ public class ImageComponent extends Component {
 		return image.getData();
 	}
 	
+	public Resource<BufferedImage> getResource() {
+		return image;
+	}
+	
 	public int getX() { return getParent().getX()+x; }
 	public int getY() { return getParent().getY()+y; }
 

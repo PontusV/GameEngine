@@ -18,5 +18,8 @@ public class Sound extends Component {
 	public void play() {
 		audio.getData().start();
 	}
-	
+
+	public Resource<Clip> getResource() {
+		return audio;
+	}
 }

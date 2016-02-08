@@ -26,6 +26,6 @@ public class Resource<T> implements Serializable {
 	}
 	
 	public void reload() {
-		data = (T)Loader.getInstance().load(adress);
+		data = (T)Loader.getInstance().load(adress).getData();
 	}
 }

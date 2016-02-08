@@ -1,10 +1,8 @@
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 
-import javax.imageio.ImageIO;
+import javax.sound.sampled.Clip;
 
 /**
  * Implementation of GameEngine.
@@ -16,10 +14,7 @@ public class Main {
 		GameEngine engine = GameEngine.getInstance();
 		//------------------------------------
 		GameObject go = new GameObject();
-		BufferedImage img = null;
-		try {
-			img = ImageIO.read(new File("mario.png"));
-		} catch (IOException e) {}
+		Resource<BufferedImage> img = Loader.getInstance().getImage("mario.png");
 		ImageComponent comp = new ImageComponent(img, 100, 100);
 		go.addComponent(comp);
 		engine.addGameObject(go);
@@ -30,8 +25,11 @@ public class Main {
 		//Adding a command makes the Game Engine send chosen key events to specified Game Object
 		LinkedList<Integer> keyCodes = new LinkedList<Integer>();
 		keyCodes.add(KeyEvent.VK_SPACE);
-		keyCodes.add(KeyEvent.VK_W);
 		InputManager.getInstance().addCommandReleased(keyCodes, go); //Sends SPACE to go
+		
+		Resource<Clip> testSound = Loader.getInstance().getSound("Footstep01.wav");
+		Sound sound = new Sound(testSound);
+		sound.play();
 		
 		engine.initiate();
 	}

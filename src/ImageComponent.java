@@ -1,16 +1,16 @@
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 public class ImageComponent extends Component {
 	private static final long serialVersionUID = 4L;
 	protected int x, y; //Offset from parent location
-	private Image image;
+	private Resource<BufferedImage> image;
 	
 	protected ImageComponent(int x, int y) { //image = null; Used by Animation
 		this.x = x;
 		this.y = y;
 	}
 	
-	public ImageComponent(Image image, int x, int y) {
+	public ImageComponent(Resource<BufferedImage> image, int x, int y) {
 		this.image = image;
 		this.x = x;
 		this.y = y;
@@ -22,8 +22,8 @@ public class ImageComponent extends Component {
 		
 	}
 
-	public Image getImage() {
-		return image;
+	public BufferedImage getImage() {
+		return image.getData();
 	}
 	
 	public int getX() { return getParent().getX()+x; }

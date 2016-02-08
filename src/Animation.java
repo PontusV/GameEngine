@@ -1,4 +1,4 @@
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class Animation extends ImageComponent {
@@ -26,13 +26,13 @@ public class Animation extends ImageComponent {
 	}
 
 	@Override
-	public Image getImage() {
+	public BufferedImage getImage() {
 		if (!frames.isEmpty())
 			return frames.get(index).img;
 		return null;
 	}
 	
-	public void addFrame(Image img, int x, int y, long duration) {
+	public void addFrame(BufferedImage img, int x, int y, long duration) {
 		if (frames.isEmpty()) {
 			index = 0;
 			currentDuration = duration;
@@ -43,11 +43,11 @@ public class Animation extends ImageComponent {
 	}
 	
 	private static class Frame {
-		Image img;
+		BufferedImage img;
 		int x,y;
 		long duration;
 		
-		public Frame(Image img, int x, int y, long duration) {
+		public Frame(BufferedImage img, int x, int y, long duration) {
 			this.img = img;
 			this.x = x;
 			this.y = y;

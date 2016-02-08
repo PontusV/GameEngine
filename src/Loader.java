@@ -4,8 +4,10 @@ import javax.sound.sampled.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,10 +15,10 @@ import java.util.Map;
  */
 public class Loader {
 	
-	private final String resourceFolder = "src/resources/";
+	private final String resourceFolder = "resources/";
 	
-	private Map<String, BufferedImage> images = new HashMap<String, BufferedImage>();
-	private Map<String, Clip> sounds = new HashMap<String, Clip>();
+	private Map<String, Resource<BufferedImage>> images = new HashMap<String, Resource<BufferedImage>>();
+	private Map<String, Resource<Clip>> sounds = new HashMap<String, Resource<Clip>>();
 	
 	private static Loader thisInstance;
 	public static Loader getInstance() {
@@ -28,64 +30,94 @@ public class Loader {
 	private Loader(){
 	}
 	
-	public BufferedImage getImage(String name) {
-
-        BufferedImage image = images.get(name);
-        if(image != null){
-        	return image;
-        }
-        try{
-        	
-        	File sourceimage = new File(resourceFolder + name);
-        	image = ImageIO.read(sourceimage);
-        	images.put(name, image);
-        	
-        } catch(Exception e){
-        	System.out.println("Could not find image " + name + ": " + e.getMessage());
-        }
-
-        return image;
-
-    }
-	
-	public Clip getSound(String name) {
-		
-		Clip sound = sounds.get(name);
-		if(sound != null){
-        	return sound;
-        }
-		
-		File file = new File(resourceFolder + name);
-		
-		AudioInputStream audioStream = null;
+	public Resource<?> load(String name) {
 		try {
-			audioStream = AudioSystem.getAudioInputStream(file);
-		} catch (UnsupportedAudioFileException e) {
-			e.printStackTrace();
+			String mime = Files.probeContentType(Paths.get(name));
+			if (mime.contains("image/"))
+				return getImage(name);
+			else if (mime.contains("audio/"))
+				return getSound(name);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		AudioFormat format = audioStream.getFormat();
-		
-		DataLine.Info info = new DataLine.Info(Clip.class, format);
-		
-		try {
-			sound = (Clip) AudioSystem.getLine(info);
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
-		}
-		
-		return sound;
-		
+		return null;
 	}
 	
-	//load an array of images
-	public BufferedImage[] getImages(String[] imageNames) {
-		BufferedImage[] imageArray = new BufferedImage[imageNames.length];
-		for (int i = 0; i < imageNames.length; i++) {
-			imageArray[i] = getImage(imageNames[i]);
+	public Resource<BufferedImage> getImage(String name) { //png, x-png, jpeg, bmp, gif
+		Resource<BufferedImage> resource = images.get(name);
+        if(resource != null){
+        	return resource;
+        }
+		try {
+			String mime = Files.probeContentType(Paths.get(name));
+	        boolean compatible = false;
+	        for (String type : ImageIO.getReaderMIMETypes()) { //Loops through all compatible Image MIMEs
+	        	if (mime.equals(type))
+	        		compatible = true;
+	        }
+	        if (!compatible) { //If image isnt compatible
+	        	System.out.println("Image is not compatible! " + name);
+	        	return null;
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
 		}
-		return imageArray;
+		//Image was found and is compatible
+        try{
+        	File sourceimage = new File(resourceFolder + name);
+        	BufferedImage image = ImageIO.read(sourceimage);
+        	resource = new Resource<BufferedImage>(image, name);
+        	images.put(name, resource);
+        	return resource;
+        } catch(IOException e){
+        	System.out.println("Could not load image " + name + ": " + e.getMessage());
+        }
+        return null;
+    }
+	
+	public Resource<Clip> getSound(String name) { //AudioInputStream for Wav
+		Resource<Clip> resource = sounds.get(name);
+		if(resource != null){ //Is sound already loaded?
+        	return resource;
+        }
+		File file = new File(resourceFolder + name);
+		try {
+			if (Files.probeContentType(file.toPath()).equals("audio/wav")) {
+				AudioInputStream audioStream = null;
+				try {
+					audioStream = AudioSystem.getAudioInputStream(file);
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioStream);
+					resource = new Resource<Clip>(clip, name);
+					sounds.put(name, resource); //Stores sound in hashmap
+					return resource; //Successfully loaded sound
+				} catch (UnsupportedAudioFileException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (LineUnavailableException e) {
+					e.printStackTrace();
+				}
+			}
+
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Used to reload an existing GameObject. Reloads all components.
+	 * 
+	 * @param go GameObject to be loaded
+	 * @see GameObject
+	 * @see Component
+	 */
+	public void loadGameObject(GameObject go) {
+		for (Component c : go.getComponents()) {
+			c.getResource().reload();
+		}
 	}
 }

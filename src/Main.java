@@ -17,7 +17,6 @@ public class Main {
 		Resource<BufferedImage> img = Loader.getInstance().getImage("mario.png");
 		ImageComponent comp = new ImageComponent(img, 100, 100);
 		go.addComponent(comp);
-		engine.addGameObject(go);
 		//-----------------------------------------
 		//Deklarerar vilket objekt som eventet ska skickas till
 		//Objektet definierar vad som ska hända
@@ -28,8 +27,13 @@ public class Main {
 		InputManager.getInstance().addCommandReleased(keyCodes, go); //Sends SPACE to go
 		
 		Resource<Clip> testSound = Loader.getInstance().getSound("Footstep01.wav");
-		Sound sound = new Sound(testSound);
-		sound.play();
+		Sound sound = new Sound(testSound, "footstep1");
+
+		go.addComponent(sound);
+		engine.addGameObject(go);
+		
+		SoundManager sm = SoundManager.getInstance();
+		sm.playSound("footstep1");
 		
 		Loader.getInstance().loadGameObject(go);
 		

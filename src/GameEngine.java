@@ -64,8 +64,11 @@ public class GameEngine {
 	public int addGameObject(GameObject go) {
 		gameObjects.add(go); //Add to list
 		for (Component comp : go.getComponents()) { //Add to renderer
-			if (comp instanceof ImageComponent)
+			if (comp instanceof ImageComponent){
 				Renderer.getInstance().add((ImageComponent)comp);
+			} else if (comp instanceof Sound){
+				SoundManager.getInstance().addSound((Sound)comp);
+			}
 		}
 		return gameObjects.size()-1; //GameObject ID
 	}

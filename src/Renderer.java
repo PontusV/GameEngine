@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
@@ -18,6 +19,9 @@ public class Renderer {
 	
 	public void draw() {
 		Graphics2D windowGraph = Window.getInstance().getGraphics(); //Retrieves window graphic
+		
+		windowGraph.setColor( new Color(255,255,255,255) );
+		windowGraph.fillRect(0,0,Window.getInstance().getWidth(), Window.getInstance().getHeight());
 		
 		for (ImageComponent image : images) { //Retrieves game graphics and draws it on the window graphic
 			windowGraph.drawImage(image.getImage(), image.getX(), image.getY(), null);

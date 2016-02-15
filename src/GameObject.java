@@ -25,10 +25,19 @@ public class GameObject implements Serializable {
 		}
 	}
 	
-	public void inputEvent(EventKey event) { System.out.println("WTF"); }
+	public void inputEvent(EventKey event) {}
 	public void addComponent(Component comp) {
 		components.add(comp);
 		comp.setGameObject(this);
+	}
+	
+	public ArrayList<ImageComponent> getImageComponents() {
+		ArrayList<ImageComponent> comps = new ArrayList<ImageComponent>();
+		for (Component comp : components) {
+			if (comp instanceof ImageComponent)
+				comps.add((ImageComponent)comp);
+		}
+		return comps;
 	}
 	
 	public ArrayList<Component> getComponents() {

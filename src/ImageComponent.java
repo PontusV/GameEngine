@@ -26,6 +26,9 @@ public class ImageComponent extends Component {
 		return image.getData();
 	}
 	
+	public int getWidth() { return getResource().getData().getWidth(); }
+	public int getHeight() { return getResource().getData().getHeight(); }
+	
 	public Resource<BufferedImage> getResource() {
 		return image;
 	}

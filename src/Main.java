@@ -18,6 +18,11 @@ public class Main {
 		ImageComponent comp = new ImageComponent(img, 100, 100);
 		go.addComponent(comp);
 		//-----------------------------------------
+		GameObject go2 = new GameObject();
+		Resource<BufferedImage> img2 = Loader.getInstance().getImage("mario.png");
+		ImageComponent comp2 = new ImageComponent(img2, 400, 370);
+		go2.addComponent(comp2);
+		//-----------------------------------------
 		//Deklarerar vilket objekt som eventet ska skickas till
 		//Objektet definierar vad som ska hända
 		//addCommand(GameObject go)
@@ -31,6 +36,8 @@ public class Main {
 
 		go.addComponent(sound);
 		engine.addGameObject(go);
+		engine.addGameObject(go2);
+		System.out.println( PhysicsEngine.getInstance().isColliding(go, go2) ); //Collision test
 		
 		SoundManager sm = SoundManager.getInstance();
 		sm.playSound("footstep1");

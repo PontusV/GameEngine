@@ -1,3 +1,4 @@
+package Engine;
 import javax.sound.sampled.Clip;
 
 public class Sound extends Component {

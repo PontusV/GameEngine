@@ -1,3 +1,4 @@
+package Engine;
 import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 
@@ -116,7 +117,8 @@ public class Loader {
 	 */
 	public void loadGameObject(GameObject go) {
 		for (Component c : go.getComponents()) {
-			c.getResource().reload();
+			if (c.getResource() != null) //Reloadable?
+				c.getResource().reload();
 		}
 	}
 }

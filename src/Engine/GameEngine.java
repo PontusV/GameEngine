@@ -1,3 +1,4 @@
+package Engine;
 import java.util.ArrayList;
 
 public class GameEngine {
@@ -36,7 +37,7 @@ public class GameEngine {
 		while (running) {
 			//Calculate timePassed
 			timePassed = System.currentTimeMillis()-currentTime;
-			currentTime = 0;
+			currentTime = System.currentTimeMillis();
 			//Sleep thread if needed
 			if (fpsLock > 0 && timePassed < fpsLock/1000) {
 				try {
@@ -47,6 +48,7 @@ public class GameEngine {
 			}
 			//Update InputManager
 			InputManager.getInstance().update();
+			PhysicsEngine.getInstance().update();
 			//Update GameObjects
 			for (GameObject go : gameObjects)
 				go.tick(timePassed);
@@ -83,9 +85,6 @@ public class GameEngine {
 	
 	public ArrayList<GameObject> getGameObjects() {
 		return gameObjects;
-	}
-	
-	public void addKeyEvent(GameObject object, EventKey event) {
 	}
 	
 	public void terminate() {

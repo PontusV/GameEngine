@@ -1,3 +1,4 @@
+package Engine;
 import java.awt.image.BufferedImage;
 
 public class ImageComponent extends Component {
